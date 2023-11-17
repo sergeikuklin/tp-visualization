@@ -12,6 +12,8 @@ import {
   Grid,
   Tooltip,
   Box,
+  TextField,
+  Dialog,
 } from '@mui/material';
 import {
   Timeline,
@@ -29,8 +31,10 @@ import {
   Flag,
   Share,
 } from '@mui/icons-material';
-import { Fragment, useState } from 'react';
-import { data } from './data';
+import { Fragment, useMemo, useState } from 'react';
+import { data as mockData } from './data';
+import Timestamp from './Timestamp';
+import { cloneDeep, update } from 'lodash';
 
 const getEventDotProps = (type) => {
   if (type === 'actual') {
@@ -73,13 +77,15 @@ const getFinishDotProps = (steps) => {
 };
 
 function App() {
+  const [data, setData] = useState(mockData);
+
   const [trackableId, setTrackableId] = useState(
     data.houseCargos[0].trackableId
   );
 
   const [view, setView] = useState('steps');
 
-  const houseCargo = data.houseCargos.find(
+  const houseCargoIndex = data.houseCargos.findIndex(
     (houseCargo) => houseCargo.trackableId === trackableId
   );
 
@@ -91,9 +97,29 @@ function App() {
     return event;
   };
 
+  const houseCargo = data.houseCargos[houseCargoIndex];
+
+  const handleAddTimestamp = (
+    event,
+    houseCargoIndex,
+    stepIndex,
+    eventIndex
+  ) => {
+    const oldData = cloneDeep(data);
+    const newData = update(
+      oldData,
+      `houseCargos[${houseCargoIndex}].steps[${stepIndex}].events[${eventIndex}]`,
+      (oldEvent) => {
+        console.log('event', oldEvent);
+        return { ...oldEvent, type: event.type, date: event.date };
+      }
+    );
+    setData(newData);
+  };
+
   const renderView = () => {
     if (view === 'steps') {
-      return houseCargo.steps.map((step) => {
+      return houseCargo.steps.map((step, stepIndex) => {
         const sharedWithHC = data.houseCargos
           .filter((hc) => {
             if (hc.trackableId === trackableId) return false;
@@ -118,7 +144,11 @@ function App() {
               </TimelineSeparator>
               <TimelineContent>
                 <Box py={1.5} display="flex" alignItems="center" spacing={2}>
-                  <Box mr={2}>{step.partnerBooking.partnerName}</Box>
+                  <Box mr={2}>
+                    <Typography fontWeight="bold" color="orange">
+                      {step.partnerBooking.partnerName}
+                    </Typography>
+                  </Box>
                   {sharedWithHC.length > 0 ? (
                     <Tooltip title={`Shared with ${sharedWithHC.join(', ')}`}>
                       <Share />
@@ -128,7 +158,7 @@ function App() {
               </TimelineContent>
             </TimelineItem>
 
-            {step.events.map((event) => (
+            {step.events.map((event, eventIndex) => (
               <TimelineItem key={event.code}>
                 <TimelineSeparator>
                   <div style={{ width: '36px' }}>
@@ -139,12 +169,27 @@ function App() {
                   <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent>
-                  <div>{event.code}</div>
+                  <Timestamp
+                    event={event}
+                    onSave={(newEvent) =>
+                      handleAddTimestamp(
+                        newEvent,
+                        houseCargoIndex,
+                        stepIndex,
+                        eventIndex
+                      )
+                    }
+                  />
+                  {/* <div>{event.code}</div>
                   {event.date && (
                     <Typography variant="secondary">
-                      {Intl.DateTimeFormat().format(new Date(event.date))}
+                      {Intl.DateTimeFormat('en-GB', {
+                        dateStyle: 'medium',
+                        timeStyle: 'medium',
+                        timeZone: 'CET',
+                      }).format(new Date(event.date))}
                     </Typography>
-                  )}
+                  )} */}
                 </TimelineContent>
               </TimelineItem>
             ))}
@@ -166,7 +211,9 @@ function App() {
             </TimelineSeparator>
             <TimelineContent>
               <Box py={1.5} display="flex" alignItems="center" spacing={2}>
-                {milestone.name}
+                <Typography fontWeight="bold" color="green">
+                  {milestone.name}
+                </Typography>
               </Box>
             </TimelineContent>
           </TimelineItem>
@@ -183,12 +230,19 @@ function App() {
                   <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent>
-                  <div>{event.code}</div>
-                  {event.date && (
-                    <Typography variant="secondary">
-                      {Intl.DateTimeFormat().format(new Date(event.date))}
-                    </Typography>
-                  )}
+                  <Grid container>
+                    <Grid xs={4}>
+                      <div>{event.code}</div>
+                      {event.date && (
+                        <Typography variant="secondary">
+                          {Intl.DateTimeFormat().format(new Date(event.date))}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid xs={8}>
+                      <TextField size="small" />
+                    </Grid>
+                  </Grid>
                 </TimelineContent>
               </TimelineItem>
             );
@@ -263,6 +317,8 @@ function App() {
           </TimelineSeparator>
         </TimelineItem>
       </Timeline>
+
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </Container>
   );
 }
