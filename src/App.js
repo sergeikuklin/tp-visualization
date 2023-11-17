@@ -34,7 +34,7 @@ import {
 import { Fragment, useMemo, useState } from 'react';
 import { data as mockData } from './data';
 import Timestamp from './Timestamp';
-import { map, update } from 'lodash';
+import { cloneDeep, map, update } from 'lodash';
 
 function App() {
   const [data, setData] = useState(mockData);
@@ -52,25 +52,20 @@ function App() {
   const houseCargo = data.houseCargos[houseCargoIndex]
 
   const handleAddTimestamp = (event, houseCargoIndex, stepIndex, eventIndex) => {
+    const oldData = cloneDeep(data)
     const newData = update(
-      data,
+      oldData,
       `houseCargos[${houseCargoIndex}].steps[${stepIndex}].events[${eventIndex}]`,
-      (event) => {
-        console.log('event', event)
-        return {...event, type: event.type, date: event.date}
+      (oldEvent) => {
+        console.log('event', oldEvent)
+        return {...oldEvent, type: event.type, date: event.date}
       }
     )
     console.log('newData', newData)
-    setData(
-      newData
-    )
+    setData(newData)
   }
 
-  // useEffect(() => {
-  //   setData(mockData)
-  // }, [mockData])
-
-  const renderView = useMemo(() => {
+  const renderView = () => {
     if (view === 'steps') {
       return houseCargo.steps.map((step, stepIndex) => {
         const sharedWithHC = data.houseCargos
@@ -204,10 +199,7 @@ function App() {
         </Fragment>
       );
     });
-  }, [data])
-  // const renderView = () => {
-    
-  // };
+  };
 
   return (
     <Container maxWidth="sm">
@@ -264,7 +256,7 @@ function App() {
           },
         }}
       >
-        {renderView}
+        {renderView()}
 
         <TimelineItem>
           <TimelineSeparator>
