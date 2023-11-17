@@ -9,14 +9,18 @@ export const data = {
           stepId: '1',
           type: 'truck',
           partnerBooking: {
-            partnerName: 'some trucker',
+            partnerName: 'STAR TRUCK',
           },
           events: [
             {
-              code: 'gateIn',
+              code: 'CGI',
               type: 'actual',
               date: '2023-11-14T18:25:43.511Z',
               milestone: 'POL',
+              history: [{
+                type: 'estimated',
+                date: '2023-11-13T10:00:00.000Z',
+              }]
             },
           ],
           equipment: 'container 1',
@@ -29,13 +33,13 @@ export const data = {
           },
           events: [
             {
-              code: 'vesselDeparture',
+              code: 'ETD',
               type: 'estimated',
               date: '2023-11-17T18:25:43.511Z',
               milestone: 'POL',
             },
             {
-              code: 'vesselArrival',
+              code: 'ETA',
               type: 'estimated',
               date: '2023-11-27T18:25:43.511Z',
               milestone: 'POD',
@@ -47,11 +51,11 @@ export const data = {
           stepId: '3',
           type: 'truck',
           partnerBooking: {
-            partnerName: 'other trucker',
+            partnerName: 'TRUCK AND TRACE',
           },
           events: [
             {
-              code: 'gateOut',
+              code: 'CGO',
               type: 'unknown',
               date: null,
               milestone: 'POD',
@@ -72,7 +76,7 @@ export const data = {
           },
           events: [
             {
-              code: 'gateIn',
+              code: 'CGI',
               type: 'actual',
               date: '2023-11-12T18:25:43.511Z',
               milestone: 'POL',
@@ -88,13 +92,13 @@ export const data = {
           },
           events: [
             {
-              code: 'vesselDeparture',
+              code: 'ETD',
               type: 'estimated',
               date: '2023-11-17T18:25:43.511Z',
               milestone: 'POL',
             },
             {
-              code: 'vesselArrival',
+              code: 'ETA',
               type: 'estimated',
               date: '2023-11-27T18:25:43.511Z',
               milestone: 'POD',
@@ -110,7 +114,7 @@ export const data = {
           },
           events: [
             {
-              code: 'gateOut',
+              code: 'CGO',
               type: 'unknown',
               date: null,
               milestone: 'POD',
@@ -127,15 +131,15 @@ export const data = {
       events: [
         {
           stepId: '1',
-          eventCode: 'gateIn',
+          eventCode: 'CGI',
         },
         {
           stepId: '2',
-          eventCode: 'vesselDeparture',
+          eventCode: 'ETD',
         },
         {
           stepId: '4',
-          eventCode: 'gateIn',
+          eventCode: 'CGI',
         },
       ],
     },
@@ -144,15 +148,15 @@ export const data = {
       events: [
         {
           stepId: '3',
-          eventCode: 'gateOut',
+          eventCode: 'CGO',
         },
         {
           stepId: '2',
-          eventCode: 'vesselArrival',
+          eventCode: 'ETA',
         },
         {
           stepId: '5',
-          eventCode: 'gateOut',
+          eventCode: 'CGO',
         },
       ],
     },
