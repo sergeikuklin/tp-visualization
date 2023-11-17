@@ -11,7 +11,6 @@ import {
   FormLabel,
   Grid,
   Tooltip,
-  Chip,
   Box,
 } from '@mui/material';
 import {
@@ -33,6 +32,46 @@ import {
 import { Fragment, useState } from 'react';
 import { data } from './data';
 
+const getEventDotProps = (type) => {
+  if (type === 'actual') {
+    return {
+      color: 'primary',
+    };
+  }
+
+  if (type === 'estimated') {
+    return {
+      color: 'primary',
+      variant: 'outlined',
+    };
+  }
+};
+
+const getStepDotProps = (events) => {
+  if (events.every((event) => event.type === 'actual')) {
+    return {
+      color: 'primary',
+    };
+  }
+
+  if (events.some((event) => event.type === 'estimated')) {
+    return {
+      color: 'primary',
+      variant: 'outlined',
+    };
+  }
+};
+
+const getFinishDotProps = (steps) => {
+  if (
+    steps[steps.length - 1].events.every((event) => event.type === 'actual')
+  ) {
+    return {
+      color: 'success',
+    };
+  }
+};
+
 function App() {
   const [trackableId, setTrackableId] = useState(
     data.houseCargos[0].trackableId
@@ -43,6 +82,14 @@ function App() {
   const houseCargo = data.houseCargos.find(
     (houseCargo) => houseCargo.trackableId === trackableId
   );
+
+  const getMilestoneEvent = (mEvent) => {
+    const step = houseCargo.steps.find((step) => step.stepId === mEvent.stepId);
+
+    const event = step?.events.find((event) => event.code === mEvent.eventCode);
+
+    return event;
+  };
 
   const renderView = () => {
     if (view === 'steps') {
@@ -58,7 +105,7 @@ function App() {
           <Fragment key={step.stepId}>
             <TimelineItem>
               <TimelineSeparator>
-                <TimelineDot color="primary" variant="outlined">
+                <TimelineDot {...getStepDotProps(step.events)}>
                   <Tooltip title={`${step.type} - ${step.equipment}`}>
                     {step.type === 'truck' ? (
                       <LocalShipping />
@@ -85,8 +132,8 @@ function App() {
               <TimelineItem key={event.code}>
                 <TimelineSeparator>
                   <div style={{ width: '36px' }}>
-                    <div style={{ width: '15px', margin: '0 auto' }}>
-                      <TimelineDot />
+                    <div style={{ width: '10px', margin: '0 auto' }}>
+                      <TimelineDot {...getEventDotProps(event.type)} />
                     </div>
                   </div>
                   <TimelineConnector />
@@ -107,11 +154,12 @@ function App() {
     }
 
     return data.milestones.map((milestone, index) => {
+      const events = milestone.events.map(getMilestoneEvent).filter(Boolean);
       return (
         <Fragment key={index}>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot color="primary" variant="outlined">
+              <TimelineDot {...getStepDotProps(events)}>
                 <Flag />
               </TimelineDot>
               <TimelineConnector />
@@ -119,23 +167,13 @@ function App() {
             <TimelineContent>{milestone.name}</TimelineContent>
           </TimelineItem>
 
-          {milestone.events.map((mEvent) => {
-            const step = houseCargo.steps.find(
-              (step) => step.stepId === mEvent.stepId
-            );
-
-            if (!step) return null;
-
-            const event = step.events.find(
-              (event) => event.code === mEvent.eventCode
-            );
-
+          {events.map((event) => {
             return (
               <TimelineItem key={event.code}>
                 <TimelineSeparator>
                   <div style={{ width: '36px' }}>
-                    <div style={{ width: '15px', margin: '0 auto' }}>
-                      <TimelineDot />
+                    <div style={{ width: '10px', margin: '0 auto' }}>
+                      <TimelineDot {...getEventDotProps(event.type)} />
                     </div>
                   </div>
                   <TimelineConnector />
@@ -215,7 +253,7 @@ function App() {
 
         <TimelineItem>
           <TimelineSeparator>
-            <TimelineDot color="primary" variant="outlined">
+            <TimelineDot {...getFinishDotProps(houseCargo.steps)}>
               <CheckCircleOutline />
             </TimelineDot>
           </TimelineSeparator>

@@ -130,12 +130,12 @@ export const data = {
           eventCode: 'gateIn',
         },
         {
-          stepId: '2',
-          eventCode: 'vesselDeparture',
-        },
-        {
           stepId: '4',
           eventCode: 'gateIn',
+        },
+        {
+          stepId: '2',
+          eventCode: 'vesselDeparture',
         },
       ],
     },
@@ -143,12 +143,12 @@ export const data = {
       name: 'POD',
       events: [
         {
-          stepId: '3',
-          eventCode: 'gateOut',
-        },
-        {
           stepId: '2',
           eventCode: 'vesselArrival',
+        },
+        {
+          stepId: '3',
+          eventCode: 'gateOut',
         },
         {
           stepId: '5',
