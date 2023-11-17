@@ -117,7 +117,7 @@ function App() {
                 <TimelineConnector />
               </TimelineSeparator>
               <TimelineContent>
-                <Box py={1} display="flex" alignItems="center" spacing={2}>
+                <Box py={1.5} display="flex" alignItems="center" spacing={2}>
                   <Box mr={2}>{step.partnerBooking.partnerName}</Box>
                   {sharedWithHC.length > 0 ? (
                     <Tooltip title={`Shared with ${sharedWithHC.join(', ')}`}>
@@ -164,7 +164,11 @@ function App() {
               </TimelineDot>
               <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent>{milestone.name}</TimelineContent>
+            <TimelineContent>
+              <Box py={1.5} display="flex" alignItems="center" spacing={2}>
+                {milestone.name}
+              </Box>
+            </TimelineContent>
           </TimelineItem>
 
           {events.map((event) => {
